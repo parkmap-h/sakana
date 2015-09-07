@@ -27,11 +27,9 @@ function createSpace(point, value) {
   req.open('POST', base_url + 'spaces');
   req.onreadystatechange = function() {
     if (req.readyState === 4 && req.status === 200){
-      var featureCollection = JSON.parse(req.responseText);
-      var spaces = featureCollection.features.map(function (s) {
-        return Space.fromFeature(s);
-      });
-      dispatch({ type: "space/load", spaces: spaces});
+      var feature = JSON.parse(req.responseText);
+      var space = Space.fromFeature(feature);
+      dispatch({ type: "space/load", spaces: [space]});
     };
   };
   var obj = {
@@ -57,6 +55,8 @@ function getCurrentPosition(callback) {
   }
 }
 
+var currentPoint = null;
+
 class Page extends Component<{}, {}, State> {
   static getStores(): Array<Store> {
     return [spaceStore];
@@ -65,13 +65,16 @@ class Page extends Component<{}, {}, State> {
   static calculateState(prevState: ?State): State {
     return {
       spaces: spaceStore.getState(),
-      currentPoint: null
+      currentPoint: currentPoint
     };
   }
 
   componentWillMount() {
     getSpaces();
-    getCurrentPosition((point) => { this.setState({currentPoint: point}); });
+    getCurrentPosition((point) => {
+      currentPoint = point;
+      this.setState({currentPoint: point});
+    });
   }
 
   _handleNoSpace() {
@@ -111,10 +114,10 @@ class Page extends Component<{}, {}, State> {
     }
     return (
       <div className="app">
+        {postButton}
         <div className="spaces">
         {spaces}
         </div>
-        {postButton}
       </div>
     );
   };
