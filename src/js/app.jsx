@@ -3,7 +3,7 @@ var Page = React.createClass({
   render: function () {
     return (
       <div className="app">
-Hello, World
+      Hello, World
       </div>
     );
   }
