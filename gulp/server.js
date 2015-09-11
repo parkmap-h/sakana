@@ -7,4 +7,5 @@ module.exports = function() {
             baseDir: "dist"
         }
     });
+    gulp.watch("dist/js/app.js").on('change', browserSync.reload);
 };
