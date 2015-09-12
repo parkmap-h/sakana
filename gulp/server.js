@@ -4,8 +4,8 @@ var browserSync = require('browser-sync').create();
 module.exports = function() {
     browserSync.init({
         server: {
-            baseDir: "dist"
+            baseDir: "public"
         }
     });
-    gulp.watch("dist/js/app.js").on('change', browserSync.reload);
+    gulp.watch("public/js/main.js").on('change', browserSync.reload);
 };
