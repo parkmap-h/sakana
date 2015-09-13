@@ -8,7 +8,6 @@ var copyHTML = require('./gulp/copy-html');
 
 gulp.task('server', server);
 gulp.task('webpack', webpack);
-gulp.task('watch', watch);
 gulp.task('copy:html', copyHTML);
 
 gulp.task('default', [
