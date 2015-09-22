@@ -1,14 +1,15 @@
 import React from 'react';
+import Space from './space';
 import prettydate from "pretty-date";
 
 var Page = React.createClass({
   render: function () {
     var features = this.props.featureCollection.features;
     var spaces = features.map(function (s) {
-      var createAt = new Date(s.properties.createAt * 1000);
+      var space =  Space.fromFeature(s);
       return (
         <div>
-          {prettydate.format(createAt)} {s.geometry.coordinates[0]},{s.geometry.coordinates[1]}に空き駐車場が{s.properties.value}件あります。
+          {prettydate.format(space.createAt)} {space.point.longitude},{space.point.latitude}に空き駐車場が{s.properties.value}件あります。
         </div>);
     });
     console.log(spaces);
