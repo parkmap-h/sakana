@@ -2,22 +2,59 @@ import React, {Component}  from 'react';
 import Space from './space';
 import prettydate from "pretty-date";
 import spaceStore from './spaceStore';
-import dispatcher from './spaceDispatcher';
+import {dispatch} from './spaceDispatcher';
 import {Container} from 'flux/utils';
+
+var base_url = "https://parkmap-h.appspot.com/";
 
 function getSpaces() {
   var req = new XMLHttpRequest();
-  req.open('GET', 'https://parkmap-h.appspot.com/spaces');
+  req.open('GET', base_url + 'spaces');
   req.onreadystatechange = function() {
     if (req.readyState === 4 && req.status === 200){
       var featureCollection = JSON.parse(req.responseText);
       var spaces = featureCollection.features.map(function (s) {
         return Space.fromFeature(s);
       });
-      dispatcher.dispatch({ type: "space/load", spaces: spaces});
+      dispatch({ type: "space/load", spaces: spaces});
     };
   };
   req.send();
+}
+
+function createSpace(point, value) {
+  var req = new XMLHttpRequest();
+  req.open('POST', base_url + 'spaces');
+  req.onreadystatechange = function() {
+    if (req.readyState === 4 && req.status === 200){
+      var featureCollection = JSON.parse(req.responseText);
+      var spaces = featureCollection.features.map(function (s) {
+        return Space.fromFeature(s);
+      });
+      dispatch({ type: "space/load", spaces: spaces});
+    };
+  };
+  var obj = {
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [point.longitude, point.latitude]
+    },
+    "properties": { "value": value }
+  };
+  req.send(JSON.stringify(obj));
+}
+
+function getCurrentPosition(callback) {
+  if( navigator.geolocation )
+  {
+    navigator.geolocation.getCurrentPosition(
+      function(position){ callback({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      }); },
+      function (){} );
+  }
 }
 
 class Page extends Component<{}, {}, State> {
@@ -27,12 +64,30 @@ class Page extends Component<{}, {}, State> {
 
   static calculateState(prevState: ?State): State {
     return {
-      spaces: spaceStore.getState()
+      spaces: spaceStore.getState(),
+      currentPoint: null
     };
   }
 
   componentWillMount() {
     getSpaces();
+    getCurrentPosition((point) => { this.setState({currentPoint: point}); });
+  }
+
+  _handleNoSpace() {
+    createSpace(this.state.currentPoint, 0);
+  }
+
+  _handleOneSpace(e) {
+    createSpace(this.state.currentPoint, 1);
+  }
+
+  _handleTwoSpace(e) {
+    createSpace(this.state.currentPoint, 2);
+  }
+
+  _handleThreeGreatorSpace(e) {
+    createSpace(this.state.currentPoint, 3);
   }
 
   render(): ?ReactElement {
@@ -42,12 +97,27 @@ class Page extends Component<{}, {}, State> {
           {prettydate.format(s.createAt)} {s.point.longitude},{s.point.latitude}に空き駐車場が{s.value}件あります。
         </div>);
     });
+    var postButton = "";
+    if (this.state.currentPoint) {
+      postButton = (
+          <div>
+          現在地 緯度:{this.state.currentPoint.latitude} 経度:{this.state.currentPoint.longitude}
+            <button onClick={this._handleNoSpace.bind(this)}>空いてない</button>
+            <button onClick={this._handleOneSpace.bind(this)}>1台</button>
+            <button onClick={this._handleTwoSpace.bind(this)}>2台</button>
+            <button onClick={this._handleThreeGreatorSpace.bind(this)}>3台</button>
+          </div>
+      );
+    }
     return (
       <div className="app">
+        <div className="spaces">
         {spaces}
+        </div>
+        {postButton}
       </div>
     );
-  }
+  };
 }
 
 const PageContainer = Container.create(Page);
