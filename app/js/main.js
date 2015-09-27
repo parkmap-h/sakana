@@ -97,14 +97,17 @@ class Page extends Component<{}, {}, State> {
     var spaces = this.state.spaces.map(function (s) {
       return (
         <div>
-          {prettydate.format(s.createAt)} {s.point.longitude},{s.point.latitude}に空き駐車場が{s.value}件あります。
+          <div>{prettydate.format(s.createAt)}</div>
+          <div>{s.point.longitude.toString().substring(0,5)},{s.point.latitude.toString().substring(0,5)}に空きが{s.value}件あります。</div>
         </div>);
     });
     var postButton = "";
     if (this.state.currentPoint) {
       postButton = (
           <div>
-          現在地 緯度:{this.state.currentPoint.latitude} 経度:{this.state.currentPoint.longitude}
+            <div>
+              現在地 緯度:{this.state.currentPoint.latitude.toString().substring(0, 5)} 経度:{this.state.currentPoint.longitude.toString().substring(0, 5)}
+            </div>
             <button onClick={this._handleNoSpace.bind(this)}>空いてない</button>
             <button onClick={this._handleOneSpace.bind(this)}>1台</button>
             <button onClick={this._handleTwoSpace.bind(this)}>2台</button>
