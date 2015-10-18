@@ -13,12 +13,21 @@
     "babel-loader": "^5.3.2",
     "babel-plugin-react-transform": "^1.0.3",
     "browser-sync": "^2.8.0",
+    "flux": "^2.1.1",
+    "gulp": "^3.9.0",
     "immutable": "^3.7.5",
     "pretty-date": "^0.2.0",
-    "react": "^0.13.3",
-    "react-transform-webpack-hmr": "^0.1.4",
+    "react": "^0.14.0",
+    "react-dom": "^0.14.0",
+    "react-google-maps": "^4.2.0",
+    "react-transform-hmr": "^1.0.1",
     "webpack": "^1.10.5",
     "webpack-dev-middleware": "^1.2.0",
     "webpack-hot-middleware": "^1.1.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-preprocess": "^1.2.0",
+    "gulp-util": "^3.0.6"
   }
 }
