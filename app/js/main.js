@@ -111,7 +111,7 @@ class Page extends Component<{}, {}, State> {
             <button onClick={this._handleNoSpace.bind(this)}>空いてない</button>
             <button onClick={this._handleOneSpace.bind(this)}>1台</button>
             <button onClick={this._handleTwoSpace.bind(this)}>2台</button>
-            <button onClick={this._handleThreeGreatorSpace.bind(this)}>3台</button>
+            <button onClick={this._handleThreeGreatorSpace.bind(this)}>3台以上</button>
           </div>
       );
     }
