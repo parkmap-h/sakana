@@ -1,10 +1,12 @@
-import React, {Component}  from 'react';
+import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
 import Space from './space';
 import prettydate from "pretty-date";
 import spaceStore from './spaceStore';
 import {dispatch} from './spaceDispatcher';
 import {Container} from 'flux/utils';
-
+import {GoogleMap, Marker} from "react-google-maps";
+var googlemaps = window.google.maps;
 var base_url = "https://parkmap-h.appspot.com/";
 
 function getSpaces() {
@@ -103,8 +105,32 @@ class Page extends Component<{}, {}, State> {
     });
     var postButton = "";
     if (this.state.currentPoint) {
+      var m = {position: {lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}};
       postButton = (
           <div>
+        <section style={{height: "80%"}}>
+          <GoogleMap containerProps={{
+            style: {
+              height: "80%"
+            }
+          }}
+          defaultZoom={14}
+          defaultCenter={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}}
+          >
+          {this.state.spaces.map((space, index) => {
+            var marker = {
+              key: "space-" + space.createAt.getTime(),
+              position: {
+                lat: space.point.latitude,
+                lng: space.point.longitude
+              },
+              label: space.value.toString(),
+              defaultAnimation: 4
+            };
+            return (<Marker {...marker} />);
+          })}
+          </GoogleMap>
+        </section>
             <div>
               現在地 緯度:{this.state.currentPoint.latitude.toString().substring(0, 5)} 経度:{this.state.currentPoint.longitude.toString().substring(0, 5)}
             </div>
@@ -127,4 +153,4 @@ class Page extends Component<{}, {}, State> {
 }
 
 const PageContainer = Container.create(Page);
-React.render(<PageContainer />, document.body);
+ReactDOM.render(<PageContainer />, document.getElementById("map"));

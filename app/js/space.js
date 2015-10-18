@@ -26,6 +26,6 @@ export default class Space extends SpaceRecord {
   }
 
   static fromFeature(feature) {
-    return new Space(feature.geometry.coordinates[0], feature.geometry.coordinates[1], feature.properties.value, feature.properties.createAt);
+    return new Space(feature.geometry.coordinates[1], feature.geometry.coordinates[0], feature.properties.value, feature.properties.createAt);
   }
 };
