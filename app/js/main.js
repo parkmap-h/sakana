@@ -112,6 +112,7 @@ class Page extends Component<{}, {}, State> {
     var postButton = "";
     if (this.state.currentPoint) {
       var m = {position: {lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}};
+      var now = new Date().getTime();
       postButton = (
           <div>
         <section style={{height: "80%"}}>
@@ -124,6 +125,7 @@ class Page extends Component<{}, {}, State> {
           defaultCenter={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}}
           >
           {this.state.spaces.map((space, index) => {
+            var delta = 2 * 60 * 60 * 1000;
             var marker = {
               key: "space-" + space.createAt.getTime(),
               position: {
@@ -131,6 +133,7 @@ class Page extends Component<{}, {}, State> {
                 lng: space.point.longitude
               },
               label: space.value.toString(),
+              opacity: 1 - ((now - space.createAt.getTime()) / delta),
               defaultAnimation: 4
             };
             return (<Marker {...marker} />);
