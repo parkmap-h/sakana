@@ -78,11 +78,17 @@ class Page extends Component<{}, {}, State> {
       this.setState({currentPoint: point});
     };
     getCurrentPosition(handleCurrentPoint);
-    var loop = () => {
+    var positionLoop = () => {
       getCurrentPosition(handleCurrentPoint);
-      window.setTimeout(loop, 1000);
+      window.setTimeout(positionLoop, 1000);
     };
-    window.setTimeout(loop, 1000);
+    window.setTimeout(positionLoop, 1000);
+
+    var getSpacesLoop = () => {
+      getSpaces();
+      window.setTimeout(getSpacesLoop, 3000);
+    };
+    window.setTimeout(getSpacesLoop, 3000);
   }
 
   _handleNoSpace() {
