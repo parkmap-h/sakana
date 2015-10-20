@@ -19,8 +19,15 @@ class SpaceStore extends ReduceStore<int, Space> {
     switch (action.type) {
     case 'space/load':
       var spaces = action.spaces.map(function(s) { return [s.createAt, s]; });
-      var s = Immutable.OrderedMap(spaces).merge(state);
-      return s;
+      var now = new Date();
+      var targetTime = now.setHours(now.getHours() - 2);
+      return Immutable.OrderedMap(
+        Immutable.OrderedMap(spaces)
+          .merge(state)
+          .toArray()
+          .filter((space, index) => {
+            return space.createAt > targetTime; })
+          .map((s) => { return [s.createAt, s]; }));
     default:
       return state;
     }
