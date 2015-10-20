@@ -73,10 +73,16 @@ class Page extends Component<{}, {}, State> {
 
   componentWillMount() {
     getSpaces();
-    getCurrentPosition((point) => {
+    var handleCurrentPoint = (point) => {
       currentPoint = point;
       this.setState({currentPoint: point});
-    });
+    };
+    getCurrentPosition(handleCurrentPoint);
+    var loop = () => {
+      getCurrentPosition(handleCurrentPoint);
+      window.setTimeout(loop, 1000);
+    };
+    window.setTimeout(loop, 1000);
   }
 
   _handleNoSpace() {
@@ -111,7 +117,7 @@ class Page extends Component<{}, {}, State> {
         <section style={{height: "80%"}}>
           <GoogleMap containerProps={{
             style: {
-              height: "80%"
+              height: "100%"
             }
           }}
           defaultZoom={14}
@@ -132,7 +138,7 @@ class Page extends Component<{}, {}, State> {
           </GoogleMap>
         </section>
             <div>
-              現在地 緯度:{this.state.currentPoint.latitude.toString().substring(0, 5)} 経度:{this.state.currentPoint.longitude.toString().substring(0, 5)}
+              現在地<br />緯度:{this.state.currentPoint.latitude}<br />経度:{this.state.currentPoint.longitude}
             </div>
             <button onClick={this._handleNoSpace.bind(this)}>空いてない</button>
             <button onClick={this._handleOneSpace.bind(this)}>1台</button>
