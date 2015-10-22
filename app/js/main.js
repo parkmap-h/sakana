@@ -58,6 +58,7 @@ function getCurrentPosition(callback) {
 }
 
 var currentPoint = null;
+var center = null;
 
 class Page extends Component<{}, {}, State> {
   static getStores(): Array<Store> {
@@ -67,7 +68,8 @@ class Page extends Component<{}, {}, State> {
   static calculateState(prevState: ?State): State {
     return {
       spaces: spaceStore.getState(),
-      currentPoint: currentPoint
+      currentPoint: currentPoint,
+      center: center
     };
   }
 
@@ -92,19 +94,25 @@ class Page extends Component<{}, {}, State> {
   }
 
   _handleNoSpace() {
-    createSpace(this.state.currentPoint, 0);
+    createSpace(this.state.center, 0);
   }
 
   _handleOneSpace(e) {
-    createSpace(this.state.currentPoint, 1);
+    createSpace(this.state.center, 1);
   }
 
   _handleTwoSpace(e) {
-    createSpace(this.state.currentPoint, 2);
+    createSpace(this.state.center, 2);
   }
 
   _handleThreeGreatorSpace(e) {
-    createSpace(this.state.currentPoint, 3);
+    createSpace(this.state.center, 3);
+  }
+
+  _handleCenterChanged(e) {
+    var map = this.refs.map;
+    var {lat, lng} = map.getCenter();
+    this.setState({center: { latitude: lat(), longitude: lng() }});
   }
 
   render(): ?ReactElement {
@@ -127,8 +135,10 @@ class Page extends Component<{}, {}, State> {
               height: "100%"
             }
           }}
+          ref="map"
           defaultZoom={14}
           defaultCenter={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}}
+          onCenterChanged={this._handleCenterChanged.bind(this)}
           >
           {this.state.spaces.map((space, index) => {
             var delta = 2 * 60 * 60 * 1000;
