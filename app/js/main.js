@@ -5,7 +5,7 @@ import prettydate from "pretty-date";
 import spaceStore from './spaceStore';
 import {dispatch} from './spaceDispatcher';
 import {Container} from 'flux/utils';
-import {GoogleMap, Marker} from "react-google-maps";
+import {GoogleMap, Marker, OverlayView} from "react-google-maps";
 var googlemaps = window.google.maps;
 var base_url = "https://parkmap-h.appspot.com/";
 
@@ -77,18 +77,23 @@ class Page extends Component<{}, {}, State> {
       currentPoint = point;
       this.setState({currentPoint: point});
     };
+    var handleCenterPoint = (point) => {
+      currentPoint = point;
+      this.setState({centerPoint: point});
+    };
+    getCurrentPosition(handleCenterPoint);
     getCurrentPosition(handleCurrentPoint);
     var positionLoop = () => {
       getCurrentPosition(handleCurrentPoint);
-      window.setTimeout(positionLoop, 1000);
+      window.setTimeout(positionLoop, 3000);
     };
-    window.setTimeout(positionLoop, 1000);
+    window.setTimeout(positionLoop, 3000);
 
     var getSpacesLoop = () => {
       getSpaces();
-      window.setTimeout(getSpacesLoop, 1000);
+      window.setTimeout(getSpacesLoop, 5000);
     };
-    window.setTimeout(getSpacesLoop, 1000);
+    window.setTimeout(getSpacesLoop, 5000);
   }
 
   _handleNoSpace() {
@@ -126,9 +131,19 @@ class Page extends Component<{}, {}, State> {
     if (this.state.currentPoint) {
       var m = {position: {lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}};
       var now = new Date().getTime();
+      var centerTarget = "";
+      if (this.state.centerPoint != null) {
+        centerTarget = (<OverlayView key="target"
+                          position={{lat: this.state.centerPoint.latitude, lng: this.state.centerPoint.longitude}}
+                          mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                          getPixelPositionOffset={this.getPixelPositionOffset}
+                        >
+                        <div style={{"font-size": "20px", "text-shadow": "0 0 4px #fff"}}>＋</div>
+                        </OverlayView>);
+      }
       postButton = (
           <div>
-        <section style={{height: "80%"}}>
+        <section style={{height: "75%"}}>
           <GoogleMap containerProps={{
             style: {
               height: "100%"
@@ -139,26 +154,24 @@ class Page extends Component<{}, {}, State> {
           defaultCenter={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}}
           onCenterChanged={this._handleCenterChanged.bind(this)}
           >
-          <Marker key="currentPoint" position={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}} />
-          {this.state.spaces.map((space, index) => {
-            var delta = 2 * 60 * 60 * 1000;
-            var marker = {
-              key: "space-" + space.createAt.getTime(),
-              position: {
-                lat: space.point.latitude,
-                lng: space.point.longitude
-              },
-              label: space.value.toString(),
-              opacity: 1 - ((now - space.createAt.getTime()) / delta),
-              defaultAnimation: 4
-            };
-            return (<Marker {...marker} />);
-          })}
+            {centerTarget}
+            <Marker key="currentPoint" position={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}} />
+            {this.state.spaces.map((space, index) => {
+              var delta = 2 * 60 * 60 * 1000;
+              var marker = {
+                key: "space-" + space.createAt.getTime(),
+                position: {
+                  lat: space.point.latitude,
+                  lng: space.point.longitude
+                },
+                label: space.value.toString(),
+                opacity: 1 - ((now - space.createAt.getTime()) / delta),
+                defaultAnimation: 4
+              };
+              return (<Marker {...marker} />);
+            })}
           </GoogleMap>
         </section>
-            <div>
-              現在地<br />緯度:{this.state.currentPoint.latitude}<br />経度:{this.state.currentPoint.longitude}
-            </div>
             <button onClick={this._handleNoSpace.bind(this)}>空いてない</button>
             <button onClick={this._handleOneSpace.bind(this)}>1台</button>
             <button onClick={this._handleTwoSpace.bind(this)}>2台</button>
@@ -175,6 +188,9 @@ class Page extends Component<{}, {}, State> {
       </div>
     );
   };
+  getPixelPositionOffset (width, height) {
+    return {x: -(width / 2), y: -(height / 2)};
+  }
 }
 
 const PageContainer = Container.create(Page);
