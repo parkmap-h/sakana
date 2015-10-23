@@ -139,6 +139,7 @@ class Page extends Component<{}, {}, State> {
           defaultCenter={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}}
           onCenterChanged={this._handleCenterChanged.bind(this)}
           >
+          <Marker key="currentPoint" position={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}} />
           {this.state.spaces.map((space, index) => {
             var delta = 2 * 60 * 60 * 1000;
             var marker = {
