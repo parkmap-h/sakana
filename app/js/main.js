@@ -58,7 +58,6 @@ function getCurrentPosition(callback) {
 }
 
 var currentPoint = null;
-var center = null;
 
 class Page extends Component<{}, {}, State> {
   static getStores(): Array<Store> {
@@ -68,8 +67,7 @@ class Page extends Component<{}, {}, State> {
   static calculateState(prevState: ?State): State {
     return {
       spaces: spaceStore.getState(),
-      currentPoint: currentPoint,
-      center: center
+      currentPoint: currentPoint
     };
   }
 
@@ -88,31 +86,32 @@ class Page extends Component<{}, {}, State> {
 
     var getSpacesLoop = () => {
       getSpaces();
-      window.setTimeout(getSpacesLoop, 3000);
+      window.setTimeout(getSpacesLoop, 1000);
     };
-    window.setTimeout(getSpacesLoop, 3000);
+    window.setTimeout(getSpacesLoop, 1000);
   }
 
   _handleNoSpace() {
-    createSpace(this.state.center, 0);
+    createSpace(this.state.centerPoint, 0);
   }
 
   _handleOneSpace(e) {
-    createSpace(this.state.center, 1);
+    createSpace(this.state.centerPoint, 1);
   }
 
   _handleTwoSpace(e) {
-    createSpace(this.state.center, 2);
+    createSpace(this.state.centerPoint, 2);
   }
 
   _handleThreeGreatorSpace(e) {
-    createSpace(this.state.center, 3);
+    createSpace(this.state.centerPoint, 3);
   }
 
   _handleCenterChanged(e) {
     var map = this.refs.map;
     var {lat, lng} = map.getCenter();
-    this.setState({center: { latitude: lat(), longitude: lng() }});
+    var point = { latitude: lat(), longitude: lng() };
+    this.setState({centerPoint: point});
   }
 
   render(): ?ReactElement {
