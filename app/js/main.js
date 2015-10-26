@@ -142,7 +142,7 @@ class Page extends Component<{}, {}, State> {
                         </OverlayView>);
       }
       postButton = (
-          <div>
+      <div>
         <section style={{height: "75%"}}>
           <GoogleMap containerProps={{
             style: {
@@ -154,7 +154,6 @@ class Page extends Component<{}, {}, State> {
           defaultCenter={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}}
           onCenterChanged={this._handleCenterChanged.bind(this)}
           >
-            {centerTarget}
             <Marker key="currentPoint" position={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}} />
             {this.state.spaces.map((space, index) => {
               var delta = 2 * 60 * 60 * 1000;
@@ -170,13 +169,14 @@ class Page extends Component<{}, {}, State> {
               };
               return (<Marker {...marker} />);
             })}
+          <div style={{position:"absolute", padding:"auto", margin:"auto", height:10, width:10, top:-16,bottom:0,right:0,left:-1, zIndex:1}}>+</div>
           </GoogleMap>
         </section>
             <button onClick={this._handleNoSpace.bind(this)}>空いてない</button>
             <button onClick={this._handleOneSpace.bind(this)}>1台</button>
             <button onClick={this._handleTwoSpace.bind(this)}>2台</button>
             <button onClick={this._handleThreeGreatorSpace.bind(this)}>3台以上</button>
-          </div>
+      </div>
       );
     }
     return (
