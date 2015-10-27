@@ -112,6 +112,12 @@ class Page extends Component<{}, {}, State> {
     createSpace(this.state.centerPoint, 3);
   }
 
+  _handleCurrentPosition(e) {
+    var map = this.refs.map;
+    var { latitude, longitude } = this.state.currentPoint;
+    map.panTo({lat: latitude, lng: longitude});
+  }
+
   _handleCenterChanged(e) {
     var map = this.refs.map;
     var {lat, lng} = map.getCenter();
@@ -169,13 +175,14 @@ class Page extends Component<{}, {}, State> {
               };
               return (<Marker {...marker} />);
             })}
-          <div style={{position:"absolute", padding:"auto", margin:"auto", height:10, width:10, top:-16,bottom:0,right:0,left:-1, zIndex:1}}>+</div>
+          <div style={{position:"absolute", padding:"auto", margin:"auto", height:10, width:10, top:-14,bottom:0,right:0,left:-1, zIndex:1}}>+</div>
           </GoogleMap>
         </section>
-            <button onClick={this._handleNoSpace.bind(this)}>空いてない</button>
-            <button onClick={this._handleOneSpace.bind(this)}>1台</button>
-            <button onClick={this._handleTwoSpace.bind(this)}>2台</button>
-            <button onClick={this._handleThreeGreatorSpace.bind(this)}>3台以上</button>
+        <button onClick={this._handleNoSpace.bind(this)}>空いてない</button>
+        <button onClick={this._handleOneSpace.bind(this)}>1台</button>
+        <button onClick={this._handleTwoSpace.bind(this)}>2台</button>
+        <button onClick={this._handleThreeGreatorSpace.bind(this)}>3台以上</button>
+        <button onClick={this._handleCurrentPosition.bind(this)}>現在地</button>
       </div>
       );
     }
