@@ -126,13 +126,21 @@ class Page extends Component<{}, {}, State> {
   }
 
   render(): ?ReactElement {
-    var spaces = this.state.spaces.map(function (s) {
+    var spaces;
+    if (this.state.spaces.length > 0) {
+      spaces = this.state.spaces.map(function (s) {
       return (
         <div>
           <div>{prettydate.format(s.createAt)}</div>
           <div>{s.point.longitude.toString().substring(0,5)},{s.point.latitude.toString().substring(0,5)}に空きが{s.value}件あります。</div>
         </div>);
-    });
+      });
+    } else {
+      spaces = (
+        <div>
+          空き情報が登録されていません。
+        </div>);
+    }
     var postButton = "";
     if (this.state.currentPoint) {
       var m = {position: {lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}};
@@ -191,6 +199,14 @@ class Page extends Component<{}, {}, State> {
         {postButton}
         <div className="spaces">
         {spaces}
+        </div>
+        <div>
+          駐車場の空き情報は誰でも登録できます。空いている駐車場をみつけたら地図の真ん中に駐車場を合わせて、空いている台数にあったボタンをタップしてください。
+          空き情報は登録されて2時間以内のものだけが表示されています。
+          古い情報は少しづつ見えなくなっていきます。
+        </div>
+        <div>
+          みんなで空き情報パークマップをつくりましょう。
         </div>
       </div>
     );
