@@ -57,6 +57,24 @@ function getCurrentPosition(callback) {
   }
 }
 
+var littleSpace = new googlemaps.MarkerImage(
+  'littleSpace.png',
+  new googlemaps.Size(5,5),
+  new googlemaps.Point(0,0),
+  new googlemaps.Point(3,3));
+var space = new googlemaps.MarkerImage(
+  'space.png',
+  new googlemaps.Size(10,10),
+  new googlemaps.Point(0,0),
+  new googlemaps.Point(5,5));
+var noSpace = new googlemaps.MarkerImage(
+  'noSpace.png',                     // url
+  new googlemaps.Size(10,10),
+  new googlemaps.Point(0,0),
+  new googlemaps.Point(5,5));
+
+var spaceIcon = [noSpace, littleSpace, space];
+
 var currentPoint = null;
 
 class Page extends Component<{}, {}, State> {
@@ -78,8 +96,12 @@ class Page extends Component<{}, {}, State> {
       this.setState({currentPoint: point});
     };
     var handleCenterPoint = (point) => {
+      var isNeedInit = this.state.currentPoint;
       currentPoint = point;
       this.setState({centerPoint: point});
+      if (isNeedInit) {
+        this._handleCurrentPosition(null);
+      }
     };
     getCurrentPosition(handleCenterPoint);
     getCurrentPosition(handleCurrentPoint);
@@ -130,84 +152,82 @@ class Page extends Component<{}, {}, State> {
     if (this.state.spaces.length > 0) {
       spaces = this.state.spaces.map(function (s) {
       return (
-        <div>
+        <div className="space">
           <div>{prettydate.format(s.createAt)}</div>
-          <div>{s.point.longitude.toString().substring(0,5)},{s.point.latitude.toString().substring(0,5)}に空きが{s.value}件あります。</div>
+          <div>{s.point.longitude.toString().substring(0,5)},{s.point.latitude.toString().substring(0,5)}に空きが情報が登録されました。</div>
         </div>);
       });
     } else {
       spaces = (
-        <div>
+        <div className="warn">
           空き情報が登録されていません。
         </div>);
     }
     var postButton = "";
-    if (this.state.currentPoint) {
-      var m = {position: {lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}};
-      var now = new Date().getTime();
-      var centerTarget = "";
-      if (this.state.centerPoint != null) {
-        centerTarget = (<OverlayView key="target"
-                          position={{lat: this.state.centerPoint.latitude, lng: this.state.centerPoint.longitude}}
-                          mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
-                          getPixelPositionOffset={this.getPixelPositionOffset}
-                        >
-                        <div style={{"font-size": "20px", "text-shadow": "0 0 4px #fff"}}>＋</div>
-                        </OverlayView>);
-      }
-      postButton = (
-      <div>
-        <section style={{height: "75%"}}>
-          <GoogleMap containerProps={{
-            style: {
-              height: "100%"
-            }
-          }}
-          ref="map"
-          defaultZoom={14}
-          defaultCenter={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}}
-          onCenterChanged={this._handleCenterChanged.bind(this)}
-          >
-            <Marker key="currentPoint" position={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}} />
-            {this.state.spaces.map((space, index) => {
-              var delta = 2 * 60 * 60 * 1000;
-              var marker = {
-                key: "space-" + space.createAt.getTime(),
-                position: {
-                  lat: space.point.latitude,
-                  lng: space.point.longitude
-                },
-                label: space.value.toString(),
-                opacity: 1 - ((now - space.createAt.getTime()) / delta),
-                defaultAnimation: 4
-              };
-              return (<Marker {...marker} />);
-            })}
-          <div style={{position:"absolute", padding:"auto", margin:"auto", height:10, width:10, top:-14,bottom:0,right:0,left:-1, zIndex:1}}>+</div>
-          </GoogleMap>
-        </section>
-        <button onClick={this._handleNoSpace.bind(this)}>空いてない</button>
-        <button onClick={this._handleOneSpace.bind(this)}>1台</button>
-        <button onClick={this._handleTwoSpace.bind(this)}>2台</button>
-        <button onClick={this._handleThreeGreatorSpace.bind(this)}>3台以上</button>
-        <button onClick={this._handleCurrentPosition.bind(this)}>現在地</button>
-      </div>
-      );
+    var now = new Date().getTime();
+    var currentMarker;
+    if (this.state.currentPoint != null) {
+      currentMarker = <Marker key="currentPoint" position={{lat: this.state.currentPoint.latitude, lng: this.state.currentPoint.longitude}} />;
     }
+    postButton = (
+    <div>
+      <section style={{height: "400px"}}>
+        <GoogleMap containerProps={{
+          style: {
+            height: "100%"
+          }
+        }}
+        ref="map"
+        defaultZoom={16}
+        defaultCenter={{lat: 0, lng: 0}}
+        onCenterChanged={this._handleCenterChanged.bind(this)}
+        >
+        {currentMarker}
+          {this.state.spaces.map((space, index) => {
+            var delta = 2 * 60 * 60 * 1000;
+            var marker = {
+              key: "space-" + space.createAt.getTime(),
+              position: {
+                lat: space.point.latitude,
+                lng: space.point.longitude
+              },
+              icon: spaceIcon[space.value],
+              opacity: 1 - ((now - space.createAt.getTime()) / delta),
+              defaultAnimation: 4
+            };
+            return (<Marker {...marker} />);
+          })}
+        <div style={{position:"absolute", padding:"auto", margin:"auto", height:10, width:10, top:-14,bottom:0,right:0,left:-1, zIndex:1}}>+</div>
+        </GoogleMap>
+      </section>
+      <div className="tool">
+        <button onClick={this._handleCurrentPosition.bind(this)}>中央を現在地に合わせる</button>
+      </div>
+      <div className="spaceRegister">
+        <button onClick={this._handleNoSpace.bind(this)}>空いてない</button>
+        <button onClick={this._handleOneSpace.bind(this)}>1〜3台ほど<br />停められる</button>
+        <button onClick={this._handleTwoSpace.bind(this)}>そこそこ停められる</button>
+      </div>
+    </div>
+    );
     return (
       <div className="app">
+        <header><h1>空き情報 パークマップ</h1></header>
         {postButton}
         <div className="spaces">
         {spaces}
         </div>
         <div>
-          駐車場の空き情報は誰でも登録できます。空いている駐車場をみつけたら地図の真ん中に駐車場を合わせて、空いている台数にあったボタンをタップしてください。
-          空き情報は登録されて2時間以内のものだけが表示されています。
-          古い情報は少しづつ見えなくなっていきます。
+          <p>
+            駐車場の空き情報は誰でも登録できます。空いている駐車場をみつけたら地図の真ん中に駐車場を合わせて、空いている台数にあったボタンをタップしてください。
+            空き情報は登録されて2時間以内のものだけが表示されています。
+            古い情報は少しづつ見えなくなっていきます。
+          </p>
+          <p>みんなで空き情報パークマップをつくりましょう。</p>
         </div>
-        <div>
-          みんなで空き情報パークマップをつくりましょう。
-        </div>
+        <footer>
+          <a href="http://parkmap.eiel.info">パークマップ広島</a>
+        </footer>
       </div>
     );
   };
