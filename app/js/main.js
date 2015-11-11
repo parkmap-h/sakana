@@ -206,7 +206,7 @@ class Page extends Component<{}, {}, State> {
       <div className="spaceRegister">
         <button onClick={this._handleNoSpace.bind(this)}>空いてない</button>
         <button onClick={this._handleOneSpace.bind(this)}>1〜3台ほど<br />停められる</button>
-        <button onClick={this._handleTwoSpace.bind(this)}>そこそこ停められる</button>
+        <button onClick={this._handleTwoSpace.bind(this)}>そこそこ<br />停められる</button>
       </div>
     </div>
     );
