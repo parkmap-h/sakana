@@ -27,10 +27,15 @@ var watch = function() {
   gulp.watch("app/css/*", ['css']);
 };
 
+var copyImage = function () {
+  return gulp.src('images/*')
+    .pipe(gulp.dest('public'));
+};
 
 gulp.task('server', server);
 gulp.task('webpack', webpack);
 gulp.task('copy:html', copyHTML);
+gulp.task('copy:image', copyImage);
 gulp.task("css", buildCSS);
 gulp.task("watch", watch);
 
@@ -38,6 +43,7 @@ gulp.task('default', [
   'webpack',
   'css',
   'copy:html',
+  'copy:image',
   'server',
   'watch'
   ]);
