@@ -179,10 +179,10 @@ class Page extends Component<{}, {}, State> {
         }}
         ref="map"
         defaultZoom={16}
-        defaultCenter={{lat: 0, lng: 0}}
+        defaultCenter={{lat: 34.393056, lng: 132.465511}}
         onCenterChanged={this._handleCenterChanged.bind(this)}
         >
-        {currentMarker}
+          {currentMarker}
           {this.state.spaces.map((space, index) => {
             var delta = 2 * 60 * 60 * 1000;
             var marker = {
