@@ -59,17 +59,17 @@ function getCurrentPosition(callback) {
 
 var littleSpace = new googlemaps.MarkerImage(
   'littleSpace.png',
-  new googlemaps.Size(5,5),
+  new googlemaps.Size(9,9),
   new googlemaps.Point(0,0),
   new googlemaps.Point(3,3));
 var space = new googlemaps.MarkerImage(
   'space.png',
-  new googlemaps.Size(10,10),
+  new googlemaps.Size(9,9),
   new googlemaps.Point(0,0),
   new googlemaps.Point(5,5));
 var noSpace = new googlemaps.MarkerImage(
   'noSpace.png',                     // url
-  new googlemaps.Size(10,10),
+  new googlemaps.Size(9,9),
   new googlemaps.Point(0,0),
   new googlemaps.Point(5,5));
 
